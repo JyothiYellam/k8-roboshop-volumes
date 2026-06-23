@@ -33,7 +33,7 @@ spec:
     matchLabels:
       project: roboshop
       tier: db
-      component: redrabbitmqis
+      component: rabbitmq
   serviceName: "rabbitmq-headless"
   replicas: 1
   #replicas: 3
@@ -43,7 +43,7 @@ spec:
       labels:
         project: roboshop
         tier: db
-        component: redis
+        component: rabbitmq
     spec:
       containers:
         - name: rabbitmq
