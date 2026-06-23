@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cart
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: cart
+data:
+  REDIS_HOST: "redis"
+  CATALOGUE_HOST: "catalogue"
+  CATALOGUE_PORT: "8080"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: cart
+   namespace: roboshop
+   labels: 
+     project: roboshop
+     tier: backend
+     component: cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: cart
+  template:
+    metadata: 
+      labels:
+        project: roboshop
+        tier: backend
+        component: cart
+    spec:
+      containers:
+        - name: cart
+          image: jyothi023/cart:1.4.0
+          imagePullPolicy: Always
+          resources:
+            requests:
+               cpu: "150m"
+               memory: "128Mi"
+            limits:
+              cpu: "150m"
+              memory: "128Mi"
+          readinessProbe:
+              # httpGet:
+              # path: /health
+              # port: 8080
+            tcpSocket: 
+                port: 8080
+            failureThreshold: 2
+            periodSeconds: 10
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: cart
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: cart
+spec:
+  selector:
+    project: roboshop
+    tier: backend
+    component: cart
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cart
+  namespace: roboshop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cart
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 20
