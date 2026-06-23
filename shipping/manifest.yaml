@@ -97,9 +97,9 @@ metadata:
   namespace: roboshop
 spec:
   scaleTargetRef:
-    apiVersion:
-    kind:
-    name:
+    apiVersion: apps/v1
+    kind: Deployment
+    name:  shipping
     minReplicas: 1
     maxReplicas: 10
   metrics:
