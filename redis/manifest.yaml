@@ -15,8 +15,8 @@ spec:
     component: redis
   ports: 
    - protocol: TCP
-     port: 3306
-     targetPort: 3306
+     port: 6379
+     targetPort: 6379
 
 ---
 apiVersion: apps/v1
@@ -54,7 +54,7 @@ spec:
       #PVC
   volumeClaimTemplates:
    - metadata:
-       name: mysql
+       name: redis
      spec:
        accessModes: [ "ReadWriteOnce" ]
        storageClassName: "roboshop-ebs"
@@ -65,18 +65,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql
+  name: redis
   namespace: roboshop
   labels:
       project: roboshop
       tier: db
-      component: mysql
+      component: redis
 spec:
   selector: 
     project: roboshop
     tier: db
-    component: mysql
+    component: redis
   ports: 
    - protocol: TCP
-     port: 3306
-     targetPort: 3306
+     port: 6379
+     targetPort: 6379
