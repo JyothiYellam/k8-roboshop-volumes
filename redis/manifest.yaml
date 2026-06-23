@@ -47,7 +47,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: jyothi023/redis:1.4.0 
+          image: redis:7.0
           volumeMounts:
           - name: redis
             mountPath: /data
